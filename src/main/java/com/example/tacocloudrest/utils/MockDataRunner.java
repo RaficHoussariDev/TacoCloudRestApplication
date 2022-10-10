@@ -2,22 +2,24 @@ package com.example.tacocloudrest.utils;
 
 import com.example.tacocloudrest.models.Ingredient;
 import com.example.tacocloudrest.models.Ingredient.Type;
-
 import com.example.tacocloudrest.models.Taco;
 import com.example.tacocloudrest.models.TacoOrder;
 import com.example.tacocloudrest.repositories.IngredientRepository;
 import com.example.tacocloudrest.repositories.OrderRepository;
 import com.example.tacocloudrest.repositories.TacoRepository;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Slf4j
 @Component
+@Transactional
 public class MockDataRunner implements CommandLineRunner {
     private final IngredientRepository ingredientRepository;
     private final TacoRepository tacoRepository;
@@ -79,8 +81,8 @@ public class MockDataRunner implements CommandLineRunner {
         tacoOrder.setDeliveryState("US");
         tacoOrder.setDeliveryZip("000000");
         tacoOrder.addTaco(taco);
-//        tacoOrder.addTaco(anotherTaco);
-//        tacoOrder.addTaco(yetAnotherTaco);
+        tacoOrder.addTaco(anotherTaco);
+        tacoOrder.addTaco(yetAnotherTaco);
         this.orderRepository.save(tacoOrder);
         log.info("tacoOrderId: {}", tacoOrder.getId());
     }

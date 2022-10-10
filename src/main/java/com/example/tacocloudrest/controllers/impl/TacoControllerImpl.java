@@ -1,5 +1,6 @@
-package com.example.tacocloudrest.controllers;
+package com.example.tacocloudrest.controllers.impl;
 
+import com.example.tacocloudrest.controllers.interfaces.TacoController;
 import com.example.tacocloudrest.models.Taco;
 import com.example.tacocloudrest.models.TacoOrder;
 import com.example.tacocloudrest.repositories.OrderRepository;
@@ -16,19 +17,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/api/tacos", produces = "application/json")
-@CrossOrigin(origins = "http://tacocloud:8000")
-public class TacoController {
+public class TacoControllerImpl implements TacoController {
     private final TacoRepository tacoRepository;
     private final OrderRepository orderRepository;
 
     @Autowired
-    public TacoController(TacoRepository tacoRepository, OrderRepository orderRepository) {
+    public TacoControllerImpl(TacoRepository tacoRepository, OrderRepository orderRepository) {
         this.tacoRepository = tacoRepository;
         this.orderRepository = orderRepository;
     }
 
-    @GetMapping(params = "recent")
+    @Override
     public Iterable<Taco> recentTacos() {
         PageRequest page = PageRequest.of(
                 0, 12, Sort.by("createdAt").descending()
@@ -37,8 +36,8 @@ public class TacoController {
         return tacoRepository.findAll(page).getContent();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Taco> tacoById(@PathVariable("id") Long id) {
+    @Override
+    public ResponseEntity<Taco> tacoById(Long id) {
         Optional<Taco> optionalTaco = this.tacoRepository.findById(id);
 
         return optionalTaco
@@ -46,14 +45,13 @@ public class TacoController {
                 .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(consumes = "application/json")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Taco postTaco(@RequestBody Taco taco) {
+    @Override
+    public Taco postTaco(Taco taco) {
         return this.tacoRepository.save(taco);
     }
 
-    @PatchMapping(path = "/{orderId}", consumes = "application/json")
-    public ResponseEntity<TacoOrder> patchOrder(@PathVariable("orderId") Long orderId, @RequestBody TacoOrder patch) {
+    @Override
+    public ResponseEntity<TacoOrder> patchOrder(Long orderId, TacoOrder patch) {
         TacoOrder tacoOrder;
         Optional<TacoOrder> optionalTacoOrder = this.orderRepository.findById(orderId);
 
@@ -89,15 +87,14 @@ public class TacoController {
         return new ResponseEntity<>(tacoOrder, HttpStatus.OK);
     }
 
-    @PutMapping(path = "/{orderId}", consumes = "application/json")
-    public TacoOrder putOrder(@PathVariable("orderId") Long orderId, @RequestBody TacoOrder tacoOrder) {
+    @Override
+    public TacoOrder putOrder(Long orderId, TacoOrder tacoOrder) {
         tacoOrder.setId(orderId);
         return orderRepository.save(tacoOrder);
     }
 
-    @DeleteMapping("/{orderId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteOrder(@PathVariable("orderId") Long orderId) {
+        @Override
+    public void deleteOrder(Long orderId) {
         try {
             orderRepository.deleteById(orderId);
         } catch (EmptyResultDataAccessException e) {}
