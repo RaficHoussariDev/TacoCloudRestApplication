@@ -6,3 +6,11 @@ spring:
     url: jdbc:h2:mem:tacocloud
     username: rafic
     password: password
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/oauth2/jwks
+
+server:
+  port: 8081
